@@ -3,6 +3,7 @@ import bcryptjs from "bcryptjs";
 import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
 
+// Signup Controller
 export const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
 
@@ -25,8 +26,9 @@ export const signup = async (req, res, next) => {
   }
 };
 
+// Signin Controller
 export const signin = async (req, res, next) => {
-  const { email, password } = req.body; // Changed to email as per user lookup
+  const { email, password } = req.body;
 
   if (!email || !password) {
     return next(errorHandler(400, "All fields are required"));
@@ -45,15 +47,15 @@ export const signin = async (req, res, next) => {
 
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
-    }); // Added expiration time for security
-      
-      const { password: pass, ...rest } = validUser._doc;
+    });
+
+    const { password: pass, ...rest } = validUser._doc;
     res
       .status(200)
       .cookie("access_token", token, {
         httpOnly: true,
       })
-      .json({ message: "Signin Successful", rest });
+      .json({ message: "Signin Successful", user: rest });
   } catch (err) {
     next(err);
   }
